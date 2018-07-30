@@ -41,7 +41,7 @@ class CardSearch extends Card
      */
     public function search($params)
     {
-        $query = Card::find();
+        $query = Card::find()->with(['image']);
 
         // add conditions that should always apply here
 

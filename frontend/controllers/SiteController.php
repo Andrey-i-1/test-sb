@@ -2,6 +2,7 @@
 namespace frontend\controllers;
 
 use common\models\Card;
+use common\models\CardElastic;
 use Yii;
 use yii\base\InvalidParamException;
 use yii\data\Pagination;
@@ -72,7 +73,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $query = Card::find()->with(["image"]);
+        $query = CardElastic::find();
         $countQuery = clone $query;
         $pages = new Pagination(['totalCount' => $countQuery->count(), 'pageSize' => 9]);
         $models = $query->offset($pages->offset)
@@ -93,10 +94,14 @@ class SiteController extends Controller
      */
     public function actionView($id)
     {
-        $card = Card::findOne($id);
+        $card  = CardElastic::find()->where([
+            "id" => $id
+        ])->one();
         if(empty($card)){
             throw new NotFoundHttpException('The requested card not found.');
         }
+        $card->views_count++;
+        $card->save();
         return $this->render('view', [
             'card' => $card
         ]);

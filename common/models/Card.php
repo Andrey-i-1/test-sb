@@ -25,6 +25,11 @@ class Card extends \yii\db\ActiveRecord
         return 'card';
     }
 
+    public function init(){
+        $this->on(self::EVENT_AFTER_INSERT, [$this, 'updateElastic']);
+        $this->on(self::EVENT_AFTER_UPDATE, [$this, 'updateElastic']);
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -58,5 +63,21 @@ class Card extends \yii\db\ActiveRecord
     public function getImage()
     {
         return $this->hasOne(File::className(), ['id' => 'image_id']);
+    }
+
+    protected function updateElastic(){
+        $elasticCard = CardElastic::find()->where([
+            "id" => $this->id
+        ])->one();
+
+        if(empty($elasticCard)){
+            $elasticCard = new CardElastic();
+        }
+
+        $elasticCard->id = $this->id;
+        $elasticCard->title = $this->title;
+        $elasticCard->description = $this->description;
+        $elasticCard->image_path = !empty($this->image_id) ? $this->image->path : null;
+        $elasticCard->save();
     }
 }
