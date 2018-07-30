@@ -75,7 +75,7 @@ class SiteController extends Controller
     {
         $query = CardElastic::find();
         $countQuery = clone $query;
-        $pages = new Pagination(['totalCount' => $countQuery->count(), 'pageSize' => 9]);
+        $pages = new Pagination(['totalCount' => $countQuery->count(), 'pageSize' => 6]);
         $models = $query->offset($pages->offset)
             ->limit($pages->limit)
             ->all();
